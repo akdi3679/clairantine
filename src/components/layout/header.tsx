@@ -5,11 +5,12 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronDown } from "lucide-react";
 
+// ✅ ORDRE MIS À JOUR : Magazine et Boutique sont maintenant côte à côte
 const navItems = [
-  { href: "/", label: "Accueil" },
-  { href: "/evenements", label: "Événements" },
+  { href: "/", label: "Accueil" },   { href: "/evenements", label: "Événements" }, 
   { href: "/magazine", label: "Le Magazine" },
-  { href: "/boutique", label: "La Boutique" }, // <-- AJOUTÉ ICI COMME LIEN PRINCIPAL
+  { href: "/boutique", label: "La Boutique" },
+
   { href: "/a-propos", label: "À propos" },
   { href: "/contact", label: "Contact", isDropdown: true },
 ];
