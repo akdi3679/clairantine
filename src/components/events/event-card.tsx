@@ -41,7 +41,7 @@ export function EventCard({ event, index }: { event: any; index: number }) {
               Terminé
             </span>
           ) : isFull ? (
-            <span className="rounded-full bg-red-500/90 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm">
+            <span className="rounded-full bg-slate-700/90 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm">
               Complet
             </span>
           ) : event.spotsLeft && event.spotsLeft <= 10 ? (
@@ -54,14 +54,14 @@ export function EventCard({ event, index }: { event: any; index: number }) {
 
       {/* CONTENU DE LA CARTE */}
       <div className="flex flex-col flex-1 p-6">
-        {/* Catégorie & Date */}
+        {/* Catégorie & Date (avec jour de la semaine) */}
         <div className="flex items-center justify-between mb-3">
           <span className="text-[10px] font-bold uppercase tracking-wider text-accent bg-accent/10 px-2 py-1 rounded-md">
             {event.category}
           </span>
           <span className="text-xs text-slate-500 flex items-center gap-1">
             <Calendar size={12} />
-            {new Date(event.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+            {new Date(event.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
           </span>
         </div>
 
@@ -79,13 +79,13 @@ export function EventCard({ event, index }: { event: any; index: number }) {
           </p>
         )}
 
-        {/* Intervenant & Job */}
-        <div className="flex items-center gap-2 mb-3 text-sm text-slate-700">
-          <User size={14} className="text-accent flex-shrink-0" />
-          <span className="truncate">
+        {/* Intervenant & Job (affiché complètement, même sur 2 lignes) */}
+        <div className="flex items-start gap-2 mb-3 text-sm text-slate-700">
+          <User size={14} className="text-accent flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
             <span className="font-semibold">{event.speaker?.name || "Intervenant"}</span>
             {event.speaker?.role && <span className="text-slate-500 font-normal">, {event.speaker.role}</span>}
-          </span>
+          </div>
         </div>
 
         {/* Salle (Lieu) */}
@@ -107,10 +107,10 @@ export function EventCard({ event, index }: { event: any; index: number }) {
                     : "Places limitées"}
                 </span>
               </div>
-              {isFull && <span className="text-xs font-bold text-red-500">Complet</span>}
+              {isFull && <span className="text-xs font-bold text-slate-700">Complet</span>}
             </div>
             
-            {/* Barre de progression visuelle */}
+            {/* Barre de progression visuelle (orange au lieu de rouge, accent au lieu de vert) */}
             <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
               <motion.div 
                 initial={{ width: 0 }}
@@ -119,8 +119,8 @@ export function EventCard({ event, index }: { event: any; index: number }) {
                 transition={{ duration: 1, delay: 0.2 }}
                 className={`h-full rounded-full ${
                   isFull ? "bg-slate-400" : 
-                  progressPercentage > 80 ? "bg-red-500" : 
-                  progressPercentage > 50 ? "bg-accent" : "bg-green-500"
+                  progressPercentage > 80 ? "bg-orange-500" : 
+                  progressPercentage > 50 ? "bg-accent" : "bg-accent/60"
                 }`}
               />
             </div>
