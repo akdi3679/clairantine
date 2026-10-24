@@ -7,8 +7,9 @@ import { Menu, X, ChevronDown } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Accueil" },
-  { href: "/evenements", label: "Événements" },
   { href: "/magazine", label: "Le Magazine" },
+  { href: "/boutique", label: "La Boutique" },
+  { href: "/evenements", label: "Événements" },
   { href: "/a-propos", label: "À propos" },
   { href: "/contact", label: "Contact", isDropdown: true },
 ];
