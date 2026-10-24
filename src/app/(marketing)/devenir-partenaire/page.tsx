@@ -67,7 +67,7 @@ export default function DevenirPartenairePage() {
           <div><label className="block text-sm font-medium text-black mb-2">Quel type de collaboration ? *</label>
             <textarea required rows={4} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-black placeholder:text-slate-400 focus:border-accent outline-none resize-none" placeholder="Sponsoring d'événements, article dédié, atelier co-brandé..." />
           </div>
-          <button type="submit" className="w-full bg-accent text-white text-lg py-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-accent/90 transition-colors">Initier la collaboration <Send size={18} /></button>
+          <button type="submit" className="w-full bg-accent text-white text-base md:text-lg py-4 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 md:gap-3 hover:bg-accent/90 transition-colors text-center leading-tight">Initier la collaboration <Send size={18} className="flex-shrink-0" /></button>
         </form>
       </section>
     </div>

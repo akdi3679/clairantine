@@ -73,11 +73,11 @@ export default function BoutiquePage() {
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedProduct(null)} className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" />
             <motion.div 
-              initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-full max-w-md bg-[#EBE5D9] border-l border-slate-200 z-50 shadow-2xl overflow-y-auto"
+              initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed md:right-0 bottom-0 left-0 md:left-auto h-[85vh] md:h-full w-full md:max-w-md bg-[#EBE5D9] md:border-l border-slate-200 z-50 shadow-2xl overflow-y-auto rounded-t-3xl md:rounded-none"
             >
-              <div className="p-8">
-                <button onClick={() => setSelectedProduct(null)} className="absolute top-6 right-6 p-2 rounded-full hover:bg-black/5 transition-colors">
+              <div className="p-6 md:p-8 pt-12 md:pt-8">
+                <button onClick={() => setSelectedProduct(null)} className="absolute top-4 right-4 md:top-6 md:right-6 p-2 rounded-full hover:bg-black/5 transition-colors">
                   <X size={24} className="text-slate-600" />
                 </button>
 

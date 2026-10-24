@@ -130,8 +130,8 @@ export default function ContactPage() {
                 <textarea required rows={5} className="w-full rounded-xl border border-slate-200 bg-[#EBE5D9]/30 px-4 py-3 text-black placeholder:text-slate-400 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all resize-none" placeholder="Écrivez votre message ici..." />
               </div>
 
-              <button type="submit" className="w-full bg-accent text-white text-lg py-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-accent/90 transition-colors">
-                Envoyer <Send size={18} />
+              <button type="submit" className="w-full bg-accent text-white text-base md:text-lg py-4 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 md:gap-3 hover:bg-accent/90 transition-colors text-center leading-tight">
+                Envoyer <Send size={18} className="flex-shrink-0" />
               </button>
             </form>
           </motion.div>

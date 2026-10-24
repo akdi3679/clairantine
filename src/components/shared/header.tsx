@@ -19,7 +19,6 @@ const dropdownLinks = [
   { href: "/devenir-intervenant", label: "Devenir intervenant" },
   { href: "/devenir-partenaire", label: "Devenir partenaire" },
   { href: "/liste-attente", label: "Liste d'attente" },
-  { href: "/boutique", label: "La Boutique" },
 ];
 
 export function Header() {
@@ -27,6 +26,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isMobileContactOpen, setIsMobileContactOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -34,9 +34,9 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setIsMobileOpen(false);
+    setIsMobileContactOpen(false);
   }, [pathname]);
 
   return (
@@ -134,34 +134,54 @@ export function Header() {
               animate={{ y: 0, opacity: 1 }} 
               exit={{ y: -20, opacity: 0 }} 
               transition={{ type: "spring", damping: 25, stiffness: 200 }} 
-              className="flex flex-col pt-32 items-center justify-center h-full gap-8"
+              className="flex flex-col pt-32 items-center justify-center h-full gap-6 overflow-y-auto py-10"
             >
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
                 return (
-                  <div key={item.href} className="flex flex-col items-center gap-4">
-                    <Link 
-                      href={item.href} 
-                      onClick={() => !item.isDropdown && setIsMobileOpen(false)} 
-                      className={`font-serif text-4xl font-bold tracking-tight transition-transform active:scale-95 ${
-                        isActive ? "text-accent" : "text-foreground"
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                    {item.isDropdown && (
-                      <div className="flex flex-col gap-2 mt-2">
-                        {dropdownLinks.map((link) => (
-                          <Link 
-                            key={link.href} 
-                            href={link.href} 
-                            onClick={() => setIsMobileOpen(false)}
-                            className={`text-lg ${pathname === link.href ? 'text-accent font-bold' : 'text-foreground/60'}`}
-                          >
-                            {link.label}
-                          </Link>
-                        ))}
-                      </div>
+                  <div key={item.href} className="flex flex-col items-center gap-4 w-full px-6">
+                    {item.isDropdown ? (
+                      <>
+                        <button 
+                          onClick={() => setIsMobileContactOpen(!isMobileContactOpen)}
+                          className={`font-serif text-4xl font-bold tracking-tight transition-transform active:scale-95 flex items-center gap-2 ${
+                            isActive ? "text-accent" : "text-foreground"
+                          }`}
+                        >
+                          {item.label} <ChevronDown size={24} className={`transition-transform ${isMobileContactOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        <AnimatePresence>
+                          {isMobileContactOpen && (
+                            <motion.div 
+                              initial={{ height: 0, opacity: 0 }} 
+                              animate={{ height: "auto", opacity: 1 }} 
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden flex flex-col gap-4 mt-2 w-full"
+                            >
+                              {dropdownLinks.map((link) => (
+                                <Link 
+                                  key={link.href} 
+                                  href={link.href} 
+                                  onClick={() => { setIsMobileOpen(false); setIsMobileContactOpen(false); }}
+                                  className={`text-xl text-center py-2 ${pathname === link.href ? 'text-accent font-bold' : 'text-foreground/60'}`}
+                                >
+                                  {link.label}
+                                </Link>
+                              ))}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </>
+                    ) : (
+                      <Link 
+                        href={item.href} 
+                        onClick={() => setIsMobileOpen(false)} 
+                        className={`font-serif text-4xl font-bold tracking-tight transition-transform active:scale-95 ${
+                          isActive ? "text-accent" : "text-foreground"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
                     )}
                   </div>
                 );

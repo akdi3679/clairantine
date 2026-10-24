@@ -63,7 +63,7 @@ export default function DevenirIntervenantPage() {
           <div><label className="block text-sm font-medium text-black mb-2">Le titre de votre talk *</label><input type="text" required className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-black placeholder:text-slate-400 focus:border-accent outline-none" placeholder="Ex: Pourquoi votre cerveau sabote votre créativité" /></div>
           <div><label className="block text-sm font-medium text-black mb-2">Le pitch (en 3 phrases max) *</label><textarea required rows={4} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-black placeholder:text-slate-400 focus:border-accent outline-none resize-none" placeholder="Quel est le problème ? Quelle est votre perspective unique ?" /></div>
           <div><label className="block text-sm font-medium text-black mb-2">Lien vers votre profil (LinkedIn, Instagram, Site) *</label><input type="url" required className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-black placeholder:text-slate-400 focus:border-accent outline-none" /></div>
-          <button type="submit" className="w-full bg-accent text-white text-lg py-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-accent/90 transition-colors">Soumettre ma proposition <Send size={18} /></button>
+          <button type="submit" className="w-full bg-accent text-white text-base md:text-lg py-4 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 md:gap-3 hover:bg-accent/90 transition-colors text-center leading-tight">Soumettre ma proposition <Send size={18} className="flex-shrink-0" /></button>
         </form>
       </section>
     </div>
