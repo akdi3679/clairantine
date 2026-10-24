@@ -5,11 +5,12 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronDown } from "lucide-react";
 
+// ✅ ORDRE EXACT : Accueil, Événements, Magazine, Boutique, À propos, Contact
 const navItems = [
   { href: "/", label: "Accueil" },
+  { href: "/evenements", label: "Événements" },
   { href: "/magazine", label: "Le Magazine" },
   { href: "/boutique", label: "La Boutique" },
-  { href: "/evenements", label: "Événements" },
   { href: "/a-propos", label: "À propos" },
   { href: "/contact", label: "Contact", isDropdown: true },
 ];
