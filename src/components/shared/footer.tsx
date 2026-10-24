@@ -74,13 +74,7 @@ function BackgroundScrollIcons({ isHovered }: { isHovered: boolean }) {
       <div ref={scrollRef} className="flex gap-16 whitespace-nowrap">
         {[...iconFiles, ...iconFiles, ...iconFiles, ...iconFiles].map((file, i) => (
           <div key={i} className="flex-shrink-0 w-40 h-40 md:w-56 md:h-56 relative">
-            <NextImage
-              src={`/icons/${file}`}
-              alt=""
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 160px, 224px"
-            />
+            <img src={`/icons/${file}`} alt="" className="object-contain w-full h-full" />
           </div>
         ))}
       </div>

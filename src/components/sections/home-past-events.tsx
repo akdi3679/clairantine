@@ -22,13 +22,12 @@ export function HomePastEvents() {
               transition={{ delay: i * 0.1 }}
               className="rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
-              <div className="aspect-[16/9] relative">
-                <Image 
-                  src={event.image} 
-                  alt={event.title}
-                  fill
-                  className="object-cover"
-                />
+              <div className="aspect-[16/9] relative bg-slate-100">
+                {event.image ? (
+                  <Image src={event.image} alt={event.title} fill className="object-cover" />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-slate-400">[ Photo ]</div>
+                )}
                 <div className="absolute top-4 right-4">
                   <span className="rounded-full bg-black/80 text-white px-3 py-1 text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
                     {event.status}
