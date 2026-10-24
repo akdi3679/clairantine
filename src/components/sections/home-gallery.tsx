@@ -27,7 +27,7 @@ function shuffle(array: string[]) {
 }
 
 export function HomeGallery() {
-  const [shuffled, setShuffled] = useState([]);
+  const [shuffled, setShuffled] = useState<string[]>([]);
 
   useEffect(() => {
     const base = shuffle([...unsplashImages]);
