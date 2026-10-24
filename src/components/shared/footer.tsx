@@ -18,14 +18,14 @@ const iconFiles = [
 
 function BackgroundScrollIcons({ isHovered }: { isHovered: boolean }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [opacity, setOpacity] = useState(0.04);
+  const [opacity, setOpacity] = useState(0.15);
   
   // Smooth opacity transition without flicker
   useEffect(() => {
-    const targetOpacity = isHovered ? 0.2 : 0.04;
+    const targetOpacity = isHovered ? 0.3 : 0.15;
     const duration = 700;
     const startTime = Date.now();
-    const startOpacity = opacity;
+    const startOpacity = 0.15;
     
     const animate = () => {
       const elapsed = Date.now() - startTime;
