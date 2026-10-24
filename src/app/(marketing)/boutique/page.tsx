@@ -10,28 +10,31 @@ interface Product {
   category: string;
   desc: string;
   features: string[];
+  image: string; // Ajout de la propriété image
 }
 
 const products: Product[] = [
-  { 
-    id: 1, name: "Le Manifeste Clairantine", price: "24", category: "Édition", 
+  {
+    id: 1, name: "Le Manifeste Clairantine", price: "24", category: "Édition",
     desc: "Un ouvrage de 120 pages qui résume notre philosophie. Papier recyclé premium, reliure cousue.",
-    features: ["120 pages, papier 100g", "Reliure cousue durable", "Signé par les fondateurs"]
+    features: ["120 pages, papier 100g", "Reliure cousue durable", "Signé par les fondateurs"],
+    image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600&auto=format&fit=crop&q=80"
   },
-  { 
-    id: 2, name: "Tote Bag - Édition Limitée", price: "18", category: "Accessoire", 
+  {
+    id: 2, name: "Tote Bag - Édition Limitée", price: "18", category: "Accessoire",
     desc: "Toile de coton épaisse et résistante, sérigraphie à l'encre à l'eau.",
-    features: ["100% coton biologique", "Anses renforcées", "Lavable en machine"]
+    features: ["100% coton biologique", "Anses renforcées", "Lavable en machine"],
+    image: "https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&auto=format&fit=crop&q=80"
   },
-  { 
-    id: 3, name: "Carnet de Notes Texturé", price: "22", category: "Papeterie", 
+  {
+    id: 3, name: "Carnet de Notes Texturé", price: "22", category: "Papeterie",
     desc: "Papier ivoire 120g sans acide, idéal pour l'écriture et le croquis.",
-    features: ["192 pages ivoire", "Marque-page intégré", "Format A5 pratique"]
+    features: ["192 pages ivoire", "Marque-page intégré", "Format A5 pratique"],
+    image: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=600&auto=format&fit=crop&q=80"
   },
 ];
 
 export default function BoutiquePage() {
-  // FIX: Explicitly type the state as Product or null
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   return (
@@ -52,7 +55,8 @@ export default function BoutiquePage() {
             <motion.div key={product.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
               className="group cursor-pointer" onClick={() => setSelectedProduct(product)}>
               <div className="aspect-square rounded-2xl bg-white border border-slate-200 mb-4 flex items-center justify-center text-slate-300 font-sans text-2xl overflow-hidden relative">
-                [ Photo Produit ]
+                {/* ✅ VRAIE IMAGE ICI AU LIEU DU TEXTE */}
+                <img src={product.image} alt={product.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center">
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black text-white rounded-full px-4 py-2 text-sm font-semibold flex items-center gap-2">
                     <ShoppingBag size={16} /> Voir les détails
@@ -67,28 +71,29 @@ export default function BoutiquePage() {
         </div>
       </section>
 
-      {/* Slide-Over Drawer */}
+      {/* Slide-Over Drawer (Bottom sheet sur mobile) */}
       <AnimatePresence>
         {selectedProduct && (
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedProduct(null)} className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" />
-            <motion.div 
+            <motion.div
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed md:right-0 bottom-0 left-0 md:left-auto h-[85vh] md:h-full w-full md:max-w-md bg-[#EBE5D9] md:border-l border-slate-200 z-50 shadow-2xl overflow-y-auto rounded-t-3xl md:rounded-none"
             >
               <div className="p-6 md:p-8 pt-12 md:pt-8">
-                <button onClick={() => setSelectedProduct(null)} className="absolute top-4 right-4 md:top-6 md:right-6 p-2 rounded-full hover:bg-black/5 transition-colors">
+                <button onClick={() => setSelectedProduct(null)} className="absolute top-4 right-4 md:top-6 md:right-6 p-2 rounded-full hover:bg-black/5 transition-colors z-10">
                   <X size={24} className="text-slate-600" />
                 </button>
 
-                <div className="aspect-square rounded-2xl bg-white border border-slate-200 mb-8 flex items-center justify-center text-slate-300 font-sans text-2xl">
-                  [ Photo Produit ]
+                {/* ✅ VRAIE IMAGE DANS LE SIDEBAR AUSSI */}
+                <div className="aspect-square rounded-2xl bg-white border border-slate-200 mb-8 flex items-center justify-center text-slate-300 font-sans text-2xl overflow-hidden">
+                  <img src={selectedProduct.image} alt={selectedProduct.name} className="w-full h-full object-cover" />
                 </div>
 
                 <span className="text-xs font-semibold uppercase tracking-wider text-accent">{selectedProduct.category}</span>
                 <h2 className="mt-2 font-sans text-3xl font-bold tracking-tight text-black">{selectedProduct.name}</h2>
                 <p className="mt-4 text-2xl font-medium text-slate-600">{selectedProduct.price}</p>
-                
+
                 <p className="mt-6 text-slate-600 leading-relaxed">{selectedProduct.desc}</p>
 
                 <ul className="mt-8 space-y-3">
@@ -99,8 +104,8 @@ export default function BoutiquePage() {
                   ))}
                 </ul>
 
-                <button className="mt-10 w-full bg-accent text-white text-lg py-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-accent/90 transition-colors">
-                  <ShoppingBag size={20} /> Ajouter au panier
+                <button className="mt-10 w-full bg-accent text-white text-base md:text-lg py-4 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 md:gap-3 hover:bg-accent/90 transition-colors text-center leading-tight">
+                  <ShoppingBag size={20} className="flex-shrink-0" /> Ajouter au panier
                 </button>
 
                 <div className="mt-8 pt-8 border-t border-slate-200 space-y-4">
