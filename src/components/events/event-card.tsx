@@ -1,66 +1,132 @@
 "use client";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Users, ArrowRight } from "lucide-react";
+import { MapPin, User, Users, Calendar } from "lucide-react";
 
-interface Event {
-  id: string;
-  title: string;
-  slug: string;
-  date: string;
-  category: string;
-  location: { name: string; city: string };
-  speaker: { name: string; role: string };
-  spotsLeft: number;
-  status: string;
-  image?: string;
-}
+export function EventCard({ event, index }: { event: any; index: number }) {
+  // Calcul de la progression (suppose une capacité par défaut de 50 si non spécifiée)
+  const totalSpots = event.capacity || 50;
+  const bookedSpots = totalSpots - (event.spotsLeft || 0);
+  const progressPercentage = Math.min(Math.max((bookedSpots / totalSpots) * 100, 5), 100);
+  
+  const isFull = event.spotsLeft === 0 || event.status === "full";
+  const isPast = event.status === "past" || event.status === "completed";
 
-export function EventCard({ event, index }: { event: Event; index: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
+      className="group flex flex-col rounded-2xl bg-white border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
     >
-      <Link href={`/evenements/${event.slug}`} className="group block h-full">
-        <div className="h-full flex flex-col rounded-2xl bg-white border border-slate-200 overflow-hidden transition-all hover:shadow-2xl hover:-translate-y-2">
-          
-          <div className="relative aspect-[16/10] bg-slate-100 overflow-hidden flex-shrink-0">
-            {event.image ? (
-              <Image src={event.image} alt={event.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-slate-400">[ Image ]</div>
-            )}
-            <div className="absolute top-4 left-4">
-              <span className="rounded-full bg-accent text-white px-3 py-1 text-xs font-bold uppercase tracking-wider shadow-lg">
-                {event.category}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-col flex-1 p-6">
-            <h3 className="font-sans text-xl font-bold tracking-tight text-slate-900 group-hover:text-accent transition-colors leading-tight mb-4">
-              {event.title}
-            </h3>
-            
-            <div className="space-y-2 text-sm text-slate-600 mb-4 flex-1">
-              <div className="flex items-center gap-2"><Calendar size={14} className="text-accent flex-shrink-0" /><span>{new Date(event.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}</span></div>
-              <div className="flex items-center gap-2"><MapPin size={14} className="text-accent flex-shrink-0" /><span>{event.location.city}</span></div>
-              <div className="flex items-center gap-2"><Users size={14} className="text-accent flex-shrink-0" /><span>{event.speaker.name}</span></div>
-            </div>
-
-            <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500">{event.spotsLeft} places restantes</span>
-              <span className="text-sm font-semibold text-accent flex items-center gap-2 group-hover:gap-3 transition-all">
-                Voir <ArrowRight size={14} />
-              </span>
-            </div>
-          </div>
+      {/* IMAGE & BADGE */}
+      <div className="relative aspect-[16/10] bg-slate-100 overflow-hidden">
+        {event.image ? (
+          <Image 
+            src={event.image} 
+            alt={event.title} 
+            fill 
+            className="object-cover transition-transform duration-500 group-hover:scale-105" 
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-sm font-medium">[ Image de l'événement ]</div>
+        )}
+        
+        {/* BADGE DE STATUT */}
+        <div className="absolute top-4 left-4">
+          {isPast ? (
+            <span className="rounded-full bg-slate-900/80 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm">
+              Terminé
+            </span>
+          ) : isFull ? (
+            <span className="rounded-full bg-red-500/90 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm">
+              Complet
+            </span>
+          ) : event.spotsLeft && event.spotsLeft <= 10 ? (
+            <span className="rounded-full bg-accent/90 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm animate-pulse">
+              Presque complet
+            </span>
+          ) : null}
         </div>
-      </Link>
+      </div>
+
+      {/* CONTENU DE LA CARTE */}
+      <div className="flex flex-col flex-1 p-6">
+        {/* Catégorie & Date */}
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-accent bg-accent/10 px-2 py-1 rounded-md">
+            {event.category}
+          </span>
+          <span className="text-xs text-slate-500 flex items-center gap-1">
+            <Calendar size={12} />
+            {new Date(event.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+          </span>
+        </div>
+
+        {/* Titre */}
+        <Link href={`/evenements/${event.slug}`} className="block group-hover:text-accent transition-colors mb-2">
+          <h3 className="font-sans text-xl font-bold tracking-tight leading-snug text-slate-900 line-clamp-2">
+            {event.title}
+          </h3>
+        </Link>
+
+        {/* Petite Description */}
+        {event.description && (
+          <p className="text-sm text-slate-600 line-clamp-2 mb-4 leading-relaxed">
+            {event.description}
+          </p>
+        )}
+
+        {/* Intervenant & Job */}
+        <div className="flex items-center gap-2 mb-3 text-sm text-slate-700">
+          <User size={14} className="text-accent flex-shrink-0" />
+          <span className="truncate">
+            <span className="font-semibold">{event.speaker?.name || "Intervenant"}</span>
+            {event.speaker?.role && <span className="text-slate-500 font-normal">, {event.speaker.role}</span>}
+          </span>
+        </div>
+
+        {/* Salle (Lieu) */}
+        <div className="flex items-center gap-2 mb-4 text-sm text-slate-700">
+          <MapPin size={14} className="text-accent flex-shrink-0" />
+          <span className="truncate font-medium">{event.location?.name}</span>
+          <span className="text-slate-500">· {event.location?.city}</span>
+        </div>
+
+        {/* Barre de progression & Places restantes */}
+        {!isPast && (
+          <div className="mt-auto pt-4 border-t border-slate-100">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                <Users size={14} className="text-accent" />
+                <span>
+                  {event.spotsLeft !== undefined 
+                    ? `${event.spotsLeft} place${event.spotsLeft > 1 ? 's' : ''} restante${event.spotsLeft > 1 ? 's' : ''}` 
+                    : "Places limitées"}
+                </span>
+              </div>
+              {isFull && <span className="text-xs font-bold text-red-500">Complet</span>}
+            </div>
+            
+            {/* Barre de progression visuelle */}
+            <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+              <motion.div 
+                initial={{ width: 0 }}
+                whileInView={{ width: `${progressPercentage}%` }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.2 }}
+                className={`h-full rounded-full ${
+                  isFull ? "bg-slate-400" : 
+                  progressPercentage > 80 ? "bg-red-500" : 
+                  progressPercentage > 50 ? "bg-accent" : "bg-green-500"
+                }`}
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 }
