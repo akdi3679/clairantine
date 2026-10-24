@@ -1,210 +1,402 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import * as OGL from "ogl";
 
-// ==========================================================
-// 1. CLOUD SHADER BACKGROUND
-// ==========================================================
-function CloudShaderBackground() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+const iconFiles = [
+  "icon-1.png", "icon-2.png", "icon-3.png", "icon-4.png",
+  "icon-5.png", "icon-6.png", "icon-7.png", "icon-8.png",
+];
+
+function BackgroundScrollIcons({ isHovered }: { isHovered: boolean }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [opacity, setOpacity] = useState(0.15);
+  
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const gl = canvas.getContext("webgl");
-    if (!gl) return;
+    const targetOpacity = isHovered ? 0.3 : 0.15;
+    const duration = 700;
+    const startTime = Date.now();
+    const startOpacity = 0.15;
     
-    const vsSource = `attribute vec2 position; void main() { gl_Position = vec4(position, 0.0, 1.0); }`;
-    const fsSource = `
-      precision mediump float;
-      uniform vec2 iResolution; uniform float iGlobalTime; uniform vec2 iMouse;
-      float hash(float n) { return fract(sin(n)*43758.5453); }
-      float noise(in vec3 x) {
-        vec3 p = floor(x); vec3 f = fract(x); f = f*f*(3.0-2.0*f);
-        float n = p.x + p.y*57.0 + 113.0*p.z;
-        return mix(mix(mix(hash(n+0.0), hash(n+1.0),f.x), mix(hash(n+57.0), hash(n+58.0),f.x),f.y),
-                   mix(mix(hash(n+113.0), hash(n+114.0),f.x), mix(hash(n+170.0), hash(n+171.0),f.x),f.y),f.z);
-      }
-      vec4 map(in vec3 p) {
-        float d = p.x + 0.5; vec3 q = p - vec3(1.0, 0.0, 0.0) * iGlobalTime * 0.5; float f;
-        f = 0.5000*noise(q); q = q*2.02; f += 0.2500*noise(q); q = q*2.03;
-        f += 0.1250*noise(q); q = q*2.01; f += 0.0625*noise(q);
-        d += 2.0 * f; d = clamp(d, 0.0, 1.0);
-        vec4 res = vec4(d); res.xyz = mix(1.15*vec3(1.0,0.95,0.8), vec3(0.7,0.7,0.7), res.x);
-        return res;
-      }
-      vec4 raymarch(in vec3 ro, in vec3 rd) {
-        vec4 sum = vec4(0,0,0,0); float t = 0.0; vec3 sundir = vec3(-1.0,0.0,0.0);
-        for(int i=0; i<64; i++) {
-          if(sum.a > 0.99) continue;
-          vec3 pos = ro + t*rd; vec4 col = map(pos);
-          float dif = clamp((col.w - map(pos+0.3*sundir).w)/0.6, 0.0, 1.0);
-          vec3 lin = vec3(0.65,0.68,0.7)*1.35 + 0.45*vec3(0.7,0.5,0.3)*dif;
-          col.xyz *= lin; col.a *= 0.35; col.rgb *= col.a;
-          sum = sum + col*(1.0 - sum.a); t += max(0.1, 0.025*t);
-        }
-        sum.xyz /= (0.001+sum.w); return clamp(sum, 0.0, 1.0);
-      }
-      void main(void) {
-        vec2 q = gl_FragCoord.xy / iResolution.xy; vec2 p = -1.0 + 2.0*q;
-        p.x *= iResolution.x / iResolution.y; vec2 mo = -1.0 + 2.0*iMouse.xy / iResolution.xy;
-        vec3 ro = vec3(2.0*mo.x, 1.0*mo.y, 4.5); vec3 ta = vec3(0.0, 0.0, 0.0);
-        vec3 ww = normalize(ta - ro); vec3 uu = normalize(cross(vec3(0.0,1.0,0.0), ww));
-        vec3 vv = normalize(cross(ww,uu)); vec3 rd = normalize(p.x*uu + p.y*vv + 1.5*ww);
-        vec4 res = raymarch(ro, rd); vec3 sundir = vec3(-1.0,0.0,0.0);
-        float sun = clamp(dot(sundir,rd), 0.0, 1.0);
-        vec3 col = vec3(0.6,0.71,0.75) - rd.y*0.2*vec3(1.0,0.5,1.0) + 0.15*0.5;
-        col += 0.2*vec3(1.0,.6,0.1)*pow(sun, 8.0); col *= 0.95;
-        col = mix(col, res.xyz, res.w); col += 0.1*vec3(1.0,0.4,0.2)*pow(sun, 3.0);
-        gl_FragColor = vec4(col, 1.0);
-      }
-    `;
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = progress < 0.5 
+        ? 2 * progress * progress 
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      
+      setOpacity(startOpacity + (targetOpacity - startOpacity) * eased);
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+  }, [isHovered]);
+  
+  useEffect(() => {
+    const scrollElement = scrollRef.current;
+    if (!scrollElement) return;
     
-    const createShader = (type: number, source: string) => {
-      const shader = gl.createShader(type);
-      if (!shader) return null;
-      gl.shaderSource(shader, source); gl.compileShader(shader);
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) { gl.deleteShader(shader); return null; }
-      return shader;
+    let animationId: number;
+    let position = 0;
+    const baseSpeed = 0.3;
+    
+    const animate = () => {
+      position -= baseSpeed * (isHovered ? 1.5 : 1);
+      const scrollWidth = scrollElement.scrollWidth / 2;
+      if (Math.abs(position) >= scrollWidth) position = 0;
+      scrollElement.style.transform = `translateX(${position}px)`;
+      animationId = requestAnimationFrame(animate);
     };
     
-    const vertexShader = createShader(gl.VERTEX_SHADER, vsSource);
-    const fragmentShader = createShader(gl.FRAGMENT_SHADER, fsSource);
-    if (!vertexShader || !fragmentShader) return;
-    
-    const program = gl.createProgram();
-    if (!program) return;
-    gl.attachShader(program, vertexShader); gl.attachShader(program, fragmentShader); gl.linkProgram(program);
-    
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-    
-    const positionLocation = gl.getAttribLocation(program, "position");
-    const resolutionLocation = gl.getUniformLocation(program, "iResolution");
-    const timeLocation = gl.getUniformLocation(program, "iGlobalTime");
-    const mouseLocation = gl.getUniformLocation(program, "iMouse");
-    
-    let animationFrameId: number;
-    let startTime = Date.now();
-    let mouseX = 0, mouseY = 0;
-    
-    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; gl.viewport(0, 0, canvas.width, canvas.height); };
-    window.addEventListener("resize", resize); resize();
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouseX = (e.clientX - rect.left) / canvas.width - 0.5;
-      mouseY = (e.clientY - rect.top) / canvas.height - 0.5;
-    };
-    canvas.addEventListener("mousemove", handleMouseMove);
-    
-    const render = () => {
-      gl.useProgram(program); gl.enableVertexAttribArray(positionLocation);
-      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer); gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-      gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
-      gl.uniform1f(timeLocation, (Date.now() - startTime) / 1000);
-      gl.uniform2f(mouseLocation, mouseX, mouseY);
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      animationFrameId = requestAnimationFrame(render);
-    };
-    render();
-    
-    return () => { 
-      window.removeEventListener("resize", resize); 
-      canvas.removeEventListener("mousemove", handleMouseMove); 
-      cancelAnimationFrame(animationFrameId); 
-    };
-  }, []);
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-40" />;
+    animationId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationId);
+  }, [isHovered]);
+  
+  return (
+    <div 
+      className="absolute inset-0 z-0 overflow-hidden pointer-events-none flex items-center"
+      style={{ opacity }}
+    >
+      <div ref={scrollRef} className="flex gap-16 whitespace-nowrap">
+        {[...iconFiles, ...iconFiles, ...iconFiles, ...iconFiles].map((file, i) => (
+          <div key={i} className="flex-shrink-0 w-40 h-40 md:w-56 md:h-56 relative bg-pink-100 border-2 border-pink-300 flex items-center justify-center">
+            <img 
+              src={`/icons/${file}`} 
+              alt="" 
+              className="object-contain w-full h-full" 
+              onError={(e) => {
+                console.error(`❌ 404: /icons/${file}`);
+                (e.currentTarget as HTMLImageElement).style.display = 'none';
+              }} 
+            />
+            <span className="absolute text-pink-700 font-bold text-xs pointer-events-none bg-white/90 px-2 py-1 rounded shadow-sm">
+              {file}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
-// ==========================================================
-// 2. MAIN FOOTER COMPONENT
-// ==========================================================
-export function Footer() {
-  const [isRippleActive, setIsRippleActive] = useState(false);
+function InteractiveFooterLogo({ onHoverChange }: { onHoverChange: (hovered: boolean) => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const isHoveredRef = useRef(false);
+  const hoverProgressRef = useRef(0);
+
+  useEffect(() => {
+    if (!containerRef.current || !canvasRef.current) return;
+
+    const container = containerRef.current;
+    const canvas = canvasRef.current;
+    
+    const renderer = new OGL.Renderer({ 
+      dpr: Math.min(window.devicePixelRatio, 2), 
+      canvas,
+      alpha: true
+    });
+    const gl = renderer.gl;
+
+    const vertex = `
+      attribute vec2 uv;
+      attribute vec2 position;
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = vec4(position, 0, 1);
+      }
+    `;
+
+    const fragment = `
+      precision highp float;
+      precision highp int;
+      uniform sampler2D tWater;
+      uniform sampler2D tFlow;
+      uniform float uTime;
+      uniform float uHover;
+      varying vec2 vUv;
+      uniform vec4 res;
+
+      void main() {
+        vec3 flow = texture2D(tFlow, vUv).rgb;
+        vec2 uv = .5 * gl_FragCoord.xy / res.xy;
+        
+        vec2 myUV = (uv - vec2(0.5)) * res.zw + vec2(0.5);
+        myUV -= flow.xy * (0.15 * 1.2);
+
+        vec2 myUV2 = (uv - vec2(0.5)) * res.zw + vec2(0.5);
+        myUV2 -= flow.xy * (0.125 * 1.2);
+
+        vec2 myUV3 = (uv - vec2(0.5)) * res.zw + vec2(0.5);
+        myUV3 -= flow.xy * (0.10 * 1.4);
+
+        vec3 tex = texture2D(tWater, myUV).rgb;
+        vec3 tex2 = texture2D(tWater, myUV2).rgb;
+        vec3 tex3 = texture2D(tWater, myUV3).rgb;
+
+        vec3 waterColor = vec3(tex.r, tex2.g, tex3.b);
+        vec3 blackColor = vec3(0.05, 0.05, 0.08);
+        vec3 finalColor = mix(blackColor, waterColor, uHover);
+        
+        gl_FragColor = vec4(finalColor, 1.0);
+      }
+    `;
+
+    const _size = [2048, 1638];
+    let aspect = 1;
+    const mouse = new OGL.Vec2(-1);
+    const velocity = new OGL.Vec2();
+    let lastTime: number | undefined;
+    const lastMouse = new OGL.Vec2();
+
+    const resize = () => {
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      if (width === 0 || height === 0) return;
+      
+      renderer.setSize(width, height);
+      
+      let a1: number, a2: number;
+      const imageAspect = _size[1] / _size[0];
+      if (height / width < imageAspect) {
+        a1 = 1;
+        a2 = (height / width) / imageAspect;
+      } else {
+        a1 = (width / height) * imageAspect;
+        a2 = 1;
+      }
+      
+      if (mesh) {
+        mesh.program.uniforms.res.value = new OGL.Vec4(width, height, a1, a2);
+      }
+      
+      aspect = width / height;
+      // @ts-ignore
+      if (flowmap) flowmap.aspect = aspect;
+    };
+
+    // @ts-ignore
+    const flowmap = new OGL.Flowmap(gl, {
+      falloff: 0.3,
+      dissipation: 0.92,
+      alpha: 0.5
+    });
+
+    const geometry = new OGL.Geometry(gl, {
+      position: { size: 2, data: new Float32Array([-1, -1, 3, -1, -1, 3]) },
+      uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) }
+    });
+
+    const texture = new OGL.Texture(gl, {
+      minFilter: gl.LINEAR,
+      magFilter: gl.LINEAR
+    });
+
+    const img = new window.Image();
+    img.crossOrigin = "Anonymous";
+    img.src = "https://robindelaporte.fr/codepen/bg3.jpg";
+    img.onload = () => {
+      texture.image = img;
+    };
+
+    let a1 = 1, a2 = 1;
+    const imageAspect = _size[1] / _size[0];
+    const width = container.clientWidth || 800;
+    const height = container.clientHeight || 200;
+    if (height / width < imageAspect) {
+      a1 = 1;
+      a2 = (height / width) / imageAspect;
+    } else {
+      a1 = (width / height) * imageAspect;
+      a2 = 1;
+    }
+
+    const program = new OGL.Program(gl, {
+      vertex,
+      fragment,
+      uniforms: {
+        uTime: { value: 0 },
+        uHover: { value: 0 },
+        tWater: { value: texture },
+        res: { value: new OGL.Vec4(width, height, a1, a2) },
+        img: { value: new OGL.Vec2(_size[1], _size[0]) },
+        // @ts-ignore
+        tFlow: flowmap.uniform
+      }
+    });
+
+    const mesh = new OGL.Mesh(gl, { geometry, program });
+
+    window.addEventListener("resize", resize);
+    resize();
+
+    const updateMouse = (e: MouseEvent | TouchEvent) => {
+      let x = 0, y = 0;
+      if ('touches' in e && e.changedTouches.length) {
+        x = e.changedTouches[0].clientX;
+        y = e.changedTouches[0].clientY;
+      } else {
+        x = (e as MouseEvent).clientX;
+        y = (e as MouseEvent).clientY;
+      }
+      
+      const rect = container.getBoundingClientRect();
+      mouse.set((x - rect.left) / rect.width, 1.0 - (y - rect.top) / rect.height);
+      
+      if (!lastTime) {
+        lastTime = performance.now();
+        lastMouse.set(x, y);
+      }
+      
+      const deltaX = x - lastMouse.x;
+      const deltaY = y - lastMouse.y;
+      lastMouse.set(x, y);
+      
+      const time = performance.now();
+      const delta = Math.max(10.4, time - lastTime);
+      lastTime = time;
+      
+      velocity.x = deltaX / delta;
+      velocity.y = deltaY / delta;
+      // @ts-ignore
+      velocity.needsUpdate = true;
+    };
+
+    container.addEventListener("mousemove", updateMouse);
+    container.addEventListener("touchstart", updateMouse, { passive: false });
+    container.addEventListener("touchmove", updateMouse, { passive: false });
+
+    let animationFrameId: number;
+    const update = (t: number) => {
+      animationFrameId = requestAnimationFrame(update);
+      
+      const targetHover = isHoveredRef.current ? 1 : 0;
+      hoverProgressRef.current += (targetHover - hoverProgressRef.current) * 0.08;
+      program.uniforms.uHover.value = hoverProgressRef.current;
+      
+      // @ts-ignore
+      if (!velocity.needsUpdate) {
+        mouse.set(-1);
+        velocity.set(0);
+      }
+      // @ts-ignore
+      velocity.needsUpdate = false;
+      
+      // @ts-ignore
+      flowmap.aspect = aspect;
+      // @ts-ignore
+      flowmap.mouse.copy(mouse);
+      // @ts-ignore
+      flowmap.velocity.lerp(velocity, velocity.len() ? 0.15 : 0.1);
+      // @ts-ignore
+      flowmap.update();
+      
+      program.uniforms.uTime.value = t * 0.01;
+      renderer.render({ scene: mesh });
+    };
+    
+    animationFrameId = requestAnimationFrame(update);
+
+    const textMask = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 200' width='100%25' height='100%25'%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Playfair Display, serif' font-weight='700' font-size='130' fill='white'%3ECLAIRANTINE%3C/text%3E%3C/svg%3E")`;
+    
+    canvas.style.maskImage = textMask;
+    canvas.style.webkitMaskImage = textMask;
+    canvas.style.maskSize = "100% 100%";
+    canvas.style.webkitMaskSize = "100% 100%";
+    canvas.style.maskRepeat = "no-repeat";
+    canvas.style.webkitMaskRepeat = "no-repeat";
+    canvas.style.maskPosition = "center";
+    canvas.style.webkitMaskPosition = "center";
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      container.removeEventListener("mousemove", updateMouse);
+      container.removeEventListener("touchstart", updateMouse);
+      container.removeEventListener("touchmove", updateMouse);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  const handleMouseEnter = () => {
+    isHoveredRef.current = true;
+    onHoverChange(true);
+  };
+
+  const handleMouseLeave = () => {
+    isHoveredRef.current = false;
+    onHoverChange(false);
+  };
 
   return (
-    <footer className="relative bg-[#1a1a1a] text-white overflow-hidden mt-24">
-      {/* Cloud Background (Lightened for dark mode contrast) */}
-      <div className="absolute inset-0 z-0 opacity-20">
-        <CloudShaderBackground />
-      </div>
+    <div 
+      ref={containerRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="relative w-full h-32 md:h-40 overflow-hidden cursor-pointer mb-6"
+    >
+      <canvas 
+        ref={canvasRef} 
+        className="absolute inset-0 w-full h-full block"
+      />
+    </div>
+  );
+}
 
-      {/* Footer Content */}
-      <div className="relative z-10 px-6 py-24 md:py-32">
-        <div className="mx-auto max-w-7xl flex flex-col items-center text-center">
-          
-          {/* Interactive CLAIRANTINE Trigger */}
-          <button 
-            onClick={() => setIsRippleActive(true)}
-            className="group relative mb-16 focus:outline-none"
-          >
-            <h2 className="font-serif text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white/10 group-hover:text-white transition-colors duration-500 cursor-pointer select-none">
-              CLAIRANTINE
-            </h2>
-            <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-[0.3em] text-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              Cliquez pour l'effet
-            </span>
-          </button>
+export function Footer() {
+  const [isLogoHovered, setIsLogoHovered] = useState(false);
+  
+  return (
+    <footer className="relative isolate overflow-hidden bg-[#D8D2C6] border-t border-slate-900/10">
+      <BackgroundScrollIcons isHovered={isLogoHovered} />
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16 text-sm font-medium text-white/60 mb-16 w-full max-w-4xl">
-            <div className="flex flex-col gap-3 text-left md:text-center">
-              <span className="font-bold text-white uppercase tracking-wider text-xs">Navigation</span>
-              <Link href="/evenements" className="hover:text-accent transition-colors">Événements</Link>
-              <Link href="/salons" className="hover:text-accent transition-colors">Salons</Link>
-              <Link href="/media" className="hover:text-accent transition-colors">Média</Link>
-            </div>
-            <div className="flex flex-col gap-3 text-left md:text-center">
-              <span className="font-bold text-white uppercase tracking-wider text-xs">Légal</span>
-              <Link href="/confidentialite" className="hover:text-accent transition-colors">Confidentialité</Link>
-              <Link href="/mentions" className="hover:text-accent transition-colors">Mentions légales</Link>
-            </div>
-            <div className="flex flex-col gap-3 text-left md:text-center">
-              <span className="font-bold text-white uppercase tracking-wider text-xs">Contact</span>
-              <a href="mailto:hello@clairantine.fr" className="hover:text-accent transition-colors">hello@clairantine.fr</a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">Instagram</a>
-            </div>
-            <div className="flex flex-col gap-3 text-left md:text-center">
-              <span className="font-bold text-white uppercase tracking-wider text-xs">Communauté</span>
-              <Link href="/contact" className="hover:text-accent transition-colors">Nous rejoindre</Link>
-              <Link href="/produits" className="hover:text-accent transition-colors">Boutique</Link>
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+          <div className="md:col-span-2">
+            <InteractiveFooterLogo onHoverChange={setIsLogoHovered} />
+            
+            <p className="mt-4 max-w-sm text-slate-800">
+              Un lieu pour découvrir, rencontrer et faire émerger des idées.
+            </p>
+            <div className="mt-8">
+              <p className="text-sm font-semibold text-slate-900 mb-2">Les places partent vite.</p>
+              <form className="flex flex-col sm:flex-row gap-2" onSubmit={(e) => e.preventDefault()}>
+                <input
+                  type="email"
+                  placeholder="Votre email"
+                  className="w-full sm:flex-1 min-w-0 rounded-full border border-slate-900/20 bg-white/60 px-4 py-2 text-sm text-slate-900 placeholder:text-slate-600 focus:border-accent outline-none"
+                />
+                <button type="submit" className="shrink-0 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent/90 transition-colors">
+                  S'abonner
+                </button>
+              </form>
             </div>
           </div>
 
-          <p className="text-xs text-white/40 font-medium tracking-wide">
-            © {new Date().getFullYear()} CLAIRANTINE. Tous droits réservés.
-          </p>
-        </div>
-      </div>
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-900/60">Univers</h4>
+            <ul className="mt-4 space-y-3">
+              <li><Link href="/evenements" className="text-slate-800 hover:text-accent transition-colors">Événements</Link></li>
+              <li><Link href="/magazine" className="text-slate-800 hover:text-accent transition-colors">Le Magazine</Link></li>
+              <li><Link href="/boutique" className="text-slate-800 hover:text-accent transition-colors">La Boutique</Link></li>
+              <li><Link href="/a-propos" className="text-slate-800 hover:text-accent transition-colors">À propos</Link></li>
+            </ul>
+          </div>
 
-      {/* Water Ripple Overlay (Simplified CSS Fallback if WebGL fails) */}
-      {isRippleActive && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black animate-in fade-in duration-500">
-          <button 
-            onClick={() => setIsRippleActive(false)} 
-            className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors z-[102] text-sm font-bold uppercase tracking-widest"
-          >
-            Fermer ✕
-          </button>
-          
-          {/* Animated CSS Gradient Background (Fallback/Alternative to WebGL) */}
-          <div className="absolute inset-0 z-[100] bg-gradient-to-br from-accent via-foreground to-black animate-pulse" />
-          
-          {/* SVG Text Mask */}
-          <div className="absolute inset-0 z-[101] flex items-center justify-center mix-blend-screen pointer-events-none">
-            <svg viewBox="0 0 800 200" className="w-[90vw] max-w-5xl h-auto">
-              <text 
-                x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" 
-                className="font-sans font-black tracking-tighter"
-                style={{ fontSize: '100px', fill: 'white' }}
-              >
-                CLAIRANTINE
-              </text>
-            </svg>
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-900/60">Rejoindre</h4>
+            <ul className="mt-4 space-y-3">
+              <li><Link href="/accueillir" className="text-slate-800 hover:text-accent transition-colors">Accueillir une soirée</Link></li>
+              <li><Link href="/devenir-intervenant" className="text-slate-800 hover:text-accent transition-colors">Devenir intervenant</Link></li>
+              <li><Link href="/devenir-partenaire" className="text-slate-800 hover:text-accent transition-colors">Devenir partenaire</Link></li>
+              <li><Link href="/liste-attente" className="text-slate-800 hover:text-accent transition-colors">Liste d'attente</Link></li>
+            </ul>
           </div>
         </div>
-      )}
+
+        <div className="mt-8 pt-8 border-t border-slate-900/10 text-center text-sm text-slate-700">
+          © {new Date().getFullYear()} Clairantine. Tous droits réservés.
+        </div>
+      </div>
     </footer>
   );
 }
