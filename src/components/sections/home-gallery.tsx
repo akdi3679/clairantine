@@ -16,7 +16,7 @@ const unsplashImages = [
   "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&auto=format&fit=crop"
 ];
 
-function shuffle(array) {
+function shuffle(array: string[]) {
   let currentIndex = array.length, randomIndex;
   while (currentIndex !== 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
