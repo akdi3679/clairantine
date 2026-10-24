@@ -266,7 +266,7 @@ function InteractiveFooterLogo({ onHoverChange }: { onHoverChange: (hovered: boo
       
       velocity.x = deltaX / delta;
       velocity.y = deltaY / delta;
-      velocity.needsUpdate = true;
+      (velocity as any).needsUpdate = true;
     };
 
     container.addEventListener("mousemove", updateMouse);
@@ -281,11 +281,11 @@ function InteractiveFooterLogo({ onHoverChange }: { onHoverChange: (hovered: boo
       hoverProgressRef.current += (targetHover - hoverProgressRef.current) * 0.08;
       program.uniforms.uHover.value = hoverProgressRef.current;
       
-      if (!velocity.needsUpdate) {
+      if (!(velocity as any).needsUpdate) {
         mouse.set(-1);
         velocity.set(0);
       }
-      velocity.needsUpdate = false;
+      (velocity as any).needsUpdate = false;
       
       flowmap.aspect = aspect;
       flowmap.mouse.copy(mouse);
