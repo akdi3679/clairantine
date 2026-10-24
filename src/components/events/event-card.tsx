@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Calendar, MapPin, Users, ArrowRight } from "lucide-react";
 
 interface Event {
-  id: number;
+  id: string;
   title: string;
   slug: string;
   date: string;
