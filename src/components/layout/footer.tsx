@@ -58,19 +58,14 @@ function BackgroundScrollIcons({ isHovered }: { isHovered: boolean }) {
     >
       <div ref={scrollRef} className="flex gap-16 whitespace-nowrap">
         {[...iconFiles, ...iconFiles, ...iconFiles, ...iconFiles].map((file, i) => (
-          <div key={i} className="flex-shrink-0 w-40 h-40 md:w-56 md:h-56 relative bg-pink-100 border-2 border-pink-300 flex items-center justify-center">
+          <div key={i} className="flex-shrink-0 w-40 h-40 md:w-56 md:h-56 relative">
             <img 
               src={`/icons/${file}`} 
               alt="" 
               className="object-contain w-full h-full" 
-              onError={(e) => {
-                console.error(`❌ 404: /icons/${file}`);
-                (e.currentTarget as HTMLImageElement).style.display = 'none';
-              }} 
+               
             />
-            <span className="absolute text-pink-700 font-bold text-xs pointer-events-none bg-white/90 px-2 py-1 rounded shadow-sm">
-              {file}
-            </span>
+            
           </div>
         ))}
       </div>
