@@ -14,21 +14,26 @@ export function HomeSalons() {
   const activeSalon = salons.find(s => s.id === activeId) || salons[0];
 
   return (
-    <section className="w-full min-h-screen flex items-center px-6 py-16 bg-surface relative">
-      
-      {/* CTA BUTTON - Top right on mobile, inline on desktop */}
-      <div className="absolute top-16 right-6 lg:relative lg:top-auto lg:right-auto lg:order-3 lg:flex lg:justify-end lg:pt-0">
-        <Link href="/accueillir" className="inline-flex items-center justify-center gap-2 bg-accent text-white px-6 py-3 rounded-full font-bold text-xs lg:text-sm hover:bg-accent/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-          Accueillir un salon
-        </Link>
-      </div>
-
-      <div className="mx-auto max-w-7xl w-full flex flex-col lg:grid lg:grid-cols-2 gap-12 lg:gap-20">
+    <section className="w-full min-h-screen flex items-center px-4 sm:px-6 py-16 bg-surface">
+      <div className="mx-auto max-w-7xl w-full flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-20">
         
-        {/* 1. TITLE */}
-        <div className="order-1 lg:col-span-2 lg:mb-4">
-          <h2 className="font-sans text-3xl md:text-4xl font-black tracking-tighter text-foreground uppercase">Nos Salons.</h2>
-          <p className="text-base text-foreground/60 mt-2">Des lieux choisis pour leur âme, leur énergie et leur accueil.</p>
+        {/* 1. HEADER : Titre à gauche, Bouton à droite (sans chevauchement) */}
+        <div className="order-1 lg:col-span-2 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 lg:mb-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="font-sans text-3xl md:text-4xl font-black tracking-tighter text-foreground uppercase leading-tight">
+              Nos Salons.
+            </h2>
+            <p className="text-base text-foreground/60 mt-2">
+              Des lieux choisis pour leur âme, leur énergie et leur accueil.
+            </p>
+          </div>
+          
+          {/* CTA BUTTON : Reste à droite sur mobile (sm+), ne rétrécit pas */}
+          <div className="sm:mt-0 flex-shrink-0">
+            <Link href="/accueillir" className="inline-flex items-center justify-center gap-2 bg-accent text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-full font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 whitespace-nowrap">
+              Accueillir un salon
+            </Link>
+          </div>
         </div>
 
         {/* 2. SELECTOR BTNS */}
