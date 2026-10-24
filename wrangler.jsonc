@@ -1,10 +1,7 @@
 {
-  "$schema": "./node_modules/wrangler/config-schema.json",
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "clairantine",
   "compatibility_date": "2024-09-23",
-  "compatibility_flags": ["nodejs_compat"],
-  "pages_build_output_dir": ".open-next",
-  "observability": {
-    "enabled": true
-  }
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "pages_build_output_dir": ".open-next"
 }
