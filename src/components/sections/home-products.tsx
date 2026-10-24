@@ -18,7 +18,7 @@ export function HomeProducts() {
             <h2 className="font-sans text-3xl md:text-5xl font-black tracking-tighter text-foreground uppercase leading-[0.9]">L'esprit Clairantine, chez vous.</h2>
             <p className="mt-4 text-base md:text-lg text-foreground/60">Des objets pensés pour les créatifs qui ne se contentent pas.</p>
           </div>
-          <Link href="/produits" className="text-sm font-bold text-foreground hover:text-accent transition-colors flex items-center gap-2 group shrink-0">
+          <Link href="/boutique" className="text-sm font-bold text-foreground hover:text-accent transition-colors flex items-center gap-2 group shrink-0">
             Voir la boutique <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
