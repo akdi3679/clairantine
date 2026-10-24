@@ -1,18 +1,14 @@
-$gitignoreContent = @'
-# dependencies
+﻿# dependencies
 /node_modules
 /.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+.pnp.js
+
+# testing
+/coverage
 
 # next.js
 /.next/
 /out/
-next-env.d.ts
 
 # production
 /build
@@ -20,7 +16,6 @@ next-env.d.ts
 # misc
 .DS_Store
 *.pem
-Thumbs.db
 
 # debug
 npm-debug.log*
@@ -28,22 +23,21 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (NEVER push secrets)
+# env files (keep your secrets safe!)
 .env
 .env*.local
-.env.production
+.env.development.local
+.env.test.local
+.env.production.local
 
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
+next-env.d.ts
 
 # IDE
 .vscode/*
 !.vscode/extensions.json
 .idea
-'@
-
-Set-Content -Path ".gitignore" -Value $gitignoreContent -Encoding UTF8
-Write-Host "✅ .gitignore created"
