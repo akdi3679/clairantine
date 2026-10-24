@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    @apply overflow-x-hidden;
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  /* Bold Editorial Typography */
+  h1, h2, h3, h4 {
+    @apply font-serif font-bold tracking-tighter text-foreground;
+  }
+  h1 { @apply text-5xl md:text-7xl lg:text-8xl leading-[0.95]; }
+  h2 { @apply text-3xl md:text-5xl lg:text-6xl leading-[1.05]; }
+  h3 { @apply text-xl md:text-2xl lg:text-3xl leading-[1.1]; }
+  p { @apply font-sans text-base md:text-lg leading-relaxed text-foreground/80; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-accent px-8 py-4 font-sans text-base font-bold text-white transition-all duration-200 ease-out active:scale-[0.97] hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full border-2 border-foreground/20 bg-transparent px-8 py-4 font-sans text-base font-bold text-foreground transition-all duration-200 ease-out active:scale-[0.97] hover:bg-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2;
+  }
+}
