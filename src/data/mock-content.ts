@@ -66,17 +66,17 @@ export const partners = {
 
 export const mockArticles = [
   {
-    id: "a1", title: "Comment Clara a transformé une passion en marque internationale",
+    id: "a1", title: "Comment Clara a transformé une passion en marque internationale", image: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200",
     subtitle: "Le secret n'est pas de travailler plus, mais de créer un univers auquel les gens veulent appartenir.",
     category: "Portrait", author: "Clairantine", readTime: 6, isFeatured: true, slug: "clara-marque-internationale"
   },
   {
-    id: "a2", title: "5 leçons d'un fondateur qui a tout quitté pour son atelier",
+    id: "a2", title: "5 leçons d'un fondateur qui a tout quitté pour son atelier", image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&q=80&w=1200",
     subtitle: "Quand la raison dit de rester, l'intuition de créer parle plus fort.",
     category: "Interview", author: "Marc Lefevre", readTime: 4, isFeatured: false, slug: "lecons-fondateur-atelier"
   },
   {
-    id: "a3", title: "Quand l'architecture rencontre l'artisanat local",
+    id: "a3", title: "Quand l'architecture rencontre l'artisanat local", image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80&w=1200",
     subtitle: "Plongée dans un projet qui redéfinit les espaces de travail collaboratifs.",
     category: "Projet Créatif", author: "Sarah Chen", readTime: 5, isFeatured: false, slug: "architecture-artisanat"
   }
