@@ -3,7 +3,16 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, X, Star, Truck, ShieldCheck } from "lucide-react";
 
-const products = [
+interface Product {
+  id: number;
+  name: string;
+  price: string;
+  category: string;
+  desc: string;
+  features: string[];
+}
+
+const products: Product[] = [
   { 
     id: 1, name: "Le Manifeste Clairantine", price: "24", category: "Édition", 
     desc: "Un ouvrage de 120 pages qui résume notre philosophie. Papier recyclé premium, reliure cousue.",
@@ -22,7 +31,8 @@ const products = [
 ];
 
 export default function BoutiquePage() {
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  // FIX: Explicitly type the state as Product or null
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   return (
     <div className="min-h-screen bg-[#EBE5D9] relative pt-32">
