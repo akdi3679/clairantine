@@ -289,7 +289,7 @@ function InteractiveFooterLogo({ onHoverChange }: { onHoverChange: (hovered: boo
       
       flowmap.aspect = aspect;
       flowmap.mouse.copy(mouse);
-      flowmap.velocity.lerp(velocity, velocity.len ? 0.15 : 0.1);
+      flowmap.velocity.lerp(velocity, velocity.len() ? 0.15 : 0.1);
       flowmap.update();
       
       program.uniforms.uTime.value = t * 0.01;
